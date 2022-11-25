@@ -1,0 +1,75 @@
+<!-- Row Highlight Javascript -->
+<!doctype html>
+<html lang="en">
+{% extends 'base.html'%}
+{% block content %}
+<!--jQuery-->
+<script src="/static/js/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+$(function() {
+    $('.search').on('click', function() {
+        // console.log($('#filterName').val());
+        $('table tbody tr').hide()
+            .filter(":contains('" + ($('#filterName').val()) + "')")
+            .show();
+
+    })
+
+    $('#filterName').on('keydown', function(e) {
+        // console.log($('#filterName').val());
+		if(e.keyCode == 13){
+        	$('table tbody tr').hide()
+            	.filter(":contains('" + ($('#filterName').val()) + "')")
+            	.show();
+		}
+    })
+
+    $('.backtotop').on('click', function() {
+        // console.log($('#filterName').val());
+        $('table tbody tr').show()
+		
+    })
+
+})
+
+</script>
+
+<style type="text/css">
+	table.tftable {font-size:12px;color:#333333;width:100%;border-width: 1px;border-color: #729ea5;border-collapse: collapse;}
+	table.tftable th {font-size:14px;color:#fffcfc;background-color:#e91616;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;text-align:left;}
+	table.tftable tr {background-color:#ffffff;}
+	table.tftable td {font-size:12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;}
+</style>
+
+<body>
+
+<p> 
+    <br> Server Search: 
+    	<input id="filterName" name="filterName"> 
+    	<input type="submit" value="search"class="search">
+    <br> 
+</p>
+<table id="tfhover" class="tftable" >
+<thead>
+<tr><th>Name</th><th>Customer</th><th>OS_Description</th><th>Status</th><th>Change_date</th></tr>
+</thead>
+{% for server in list%}
+<tr>
+	<td>{{ server.name }}</td>
+    <td>{{ server.customer }}</td>
+	<td>{{ server.os_description}}</td>
+    <td>{{ server.status}}</td>
+    <td>{{ server.change_date}}</td>
+</tr>
+{% endfor %}
+</table>
+<br>
+<p> 
+   	<input type="submit" value="back"class="backtotop">
+</p>
+
+</body>
+{% endblock %}
+</html>

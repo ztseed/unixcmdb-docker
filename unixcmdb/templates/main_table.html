@@ -1,0 +1,154 @@
+<!-- Row Highlight Javascript -->
+{% extends 'base.html'%}
+{% block content %}
+<!doctype html>
+<!--jQuery-->
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/echarts.min.js"></script>
+<script type="text/javascript">
+
+//	window.onload=function(){
+//	var tfrow = document.getElementById('tfhover').rows.length;
+//	var tbRow=[];
+//	for (var i=1;i<tfrow;i++) {
+//		tbRow[i]=document.getElementById('tfhover').rows[i];
+//		tbRow[i].onmouseover = function(){
+//		  this.style.backgroundColor = '#d4e3e5';
+//		};
+//		tbRow[i].onmouseout = function() {
+//		  this.style.backgroundColor = '#ffffff';
+//		};
+//	}
+//};
+
+$(function() {
+    $('.search').on('click', function() {
+        // console.log($('#filterName').val());
+        $('table tbody tr').hide()
+            .filter(":contains('" + ($('#filterName').val()) + "')")
+            .show();
+
+    })
+
+    $('#filterName').on('keydown', function(e) {
+        // console.log($('#filterName').val());
+		if(e.keyCode == 13){
+        	$('table tbody tr').hide()
+            	.filter(":contains('" + ($('#filterName').val()) + "')")
+            	.show();
+		}
+    })
+
+    $('.backtotop').on('click', function() {
+        // console.log($('#filterName').val());
+        $('table tbody tr').show()
+		
+    })
+
+
+    var myChart = echarts.init(document.getElementById('main'));
+
+	
+    $.ajax({
+      type: "get",
+      url: "/api/echarts",
+      dataType: "json",
+      success: function (data) {
+
+        var option = {
+          title: {
+            left: 'center',
+            text: ' Server Distribution by Customer'
+          },
+          tooltip: {},
+          xAxis: {
+              name: 'Customer',
+              data: data.key,
+              type: 'category',
+              axisLabel: { interval: 0, rotate: 15 },
+          },
+          yAxis: {},
+          series: [{
+            name: 'server amount',
+            type: 'bar',
+            data: data.value
+          }]
+        };
+
+        myChart.setOption(option);
+      },
+      error: function () {
+        alert('Error: ajax request error')
+      }
+    });
+})
+
+</script>
+
+<style type="text/css">
+	table.tftable {font-size:12px;color:#333333;width:100%;border-width: 1px;border-color: #729ea5;border-collapse: collapse;}
+	table.tftable th {font-size:14px;color:#fffcfc;background-color:#e91616;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;text-align:left;}
+	table.tftable tr {background-color:#ffffff;}
+	table.tftable td {font-size:12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;}
+</style>
+
+<body>
+<div id="main" style="height:400px;"></div>
+<p> 
+    <br> Server Search: 
+    	<input id="filterName" name="filterName"> 
+    	<input type="submit" value="search"class="search">
+    <br> 
+</p>
+<table id="tfhover" class="tftable" >
+<thead>
+      <tr>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Discovered_Os_Name</th>
+        <th>OS_Description</th>
+        <th>Location_Limited</th>
+        <th>Compliance_Classification</th>
+        <th>Serial_Number</th>
+        <th>Customer</th>
+        <th>Business_Application</th>
+        <th>Discovered_Model</th>
+        <th>Calculated_Location</th>
+      </tr>
+</thead>
+{% for server in list1%}
+<tr>
+	<td>{{ server.name }}</td>
+	<td>{{ server.status }}</td>
+	<td>{{ server.discovered_os_name }}</td>
+	<td>{{ server.os_description}}</td>
+	<td>{{ server.operation_location_limited_to }}</td>
+	<td>{{ server.compliance_classification }}</td>
+	<td>{{ server.serial_number }}</td>
+	<td>{{ server.customer }}</td>
+	<td>{{ server.business_application }}</td>
+	<td>{{ server.discovered_model }}</td>
+	<td>{{ server.calculated_location }}</td>
+</tr>
+{% endfor %}
+{% for server in list2%}
+    <tr>
+      <td>{{ server.name }}</td>
+      <td>{{ server.status }}</td>
+      <td>{{ server.discovered_os_name }}</td>
+      <td>{{ server.os_description}}</td>
+      <td>{{ server.operation_location_limited_to }}</td>
+      <td>{{ server.compliance_classification }}</td>
+      <td>{{ server.serial_number }}</td>
+      <td>{{ server.customer }}</td>
+      <td>{{ server.business_application }}</td>
+      <td>{{ server.discovered_model }}</td>
+      <td>{{ server.calculated_location }}</td>
+    </tr>
+{% endfor %}
+</table>
+<p> 
+   	<input type="submit" value="back"class="backtotop">
+</p>
+</body>
+{% endblock %}

@@ -1,0 +1,71 @@
+version: '3'
+
+volumes:
+  mysql_data:
+  mysql_log:
+
+services:
+  mysql:
+
+    image: mysql:8.0
+    container_name: unixcmdb_mysql
+    privileged: true
+
+    volumes:
+      - mysql_data:/var/lib/mysql:rw
+      - mysql_log:/logs:rw
+      - ./mysql/conf:/etc/mysql/conf.d
+      - ./mysql/init:/docker-entrypoint-initdb.d/
+      - ./mysql/dump:/dump:rw
+
+    expose: 
+      - "3306" 
+    ports:
+      - "3306:3306"
+
+    environment:
+      MYSQL_ROOT_PASSWORD: initial
+      MYSQL_DATABASE: unixcmdb
+      MYSQL_USER: ztseed
+      MYSQL_PASSWORD: initial
+      MYSQL_INITDB_SKIP_TZINFO: Asia/Shanghai
+
+
+    command: --character-set-server=utf8mb4 
+             --collation-server=utf8mb4_unicode_ci
+             --explicit_defaults_for_timestamp=true
+            #  --init-file /docker-entrypoint-initdb.d/init.sql
+ 
+  django:
+    hostname: django
+    container_name: unixcmdb_Django
+    user: root
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - ./unixcmdb:/usr/src/app:rw
+    # command: python manage.py runserver 0.0.0.0:8000
+    command: sh /usr/src/app/startweb.sh
+    # ports:
+    #    - "8000:8000"
+    expose:
+         - "8000"
+    links:
+      - mysql
+    depends_on:
+      - mysql
+ 
+  nginx:
+    image: nginx:latest
+    container_name: unixcmdb_nginx
+    ports:
+       - "8080:8080"
+    volumes:
+      - ./unixcmdb/staticfiles:/staticfiles
+      - ./nginx:/etc/nginx/conf.d
+    links:
+      - django
+    depends_on:
+      - django
+      - mysql

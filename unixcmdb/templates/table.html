@@ -1,0 +1,68 @@
+<!-- Row Highlight Javascript -->
+<!doctype html>
+<html lang="en">
+<!--jQuery-->
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+
+<script type="text/javascript">
+	window.onload=function(){
+	var tfrow = document.getElementById('tfhover').rows.length;
+	var tbRow=[];
+	for (var i=1;i<tfrow;i++) {
+		tbRow[i]=document.getElementById('tfhover').rows[i];
+		tbRow[i].onmouseover = function(){
+		  this.style.backgroundColor = '#ffffff';
+		};
+		tbRow[i].onmouseout = function() {
+		  this.style.backgroundColor = '#d4e3e5';
+		};
+	}
+};
+
+$(function() {
+    $('.search').on('click', function() {
+        // console.log($('#filterName').val());
+        $('table tbody tr').hide()
+            .filter(":contains('" + ($('#filterName').val()) + "')")
+            .show();
+    })
+})
+
+</script>
+
+<style type="text/css">
+	table.tftable {font-size:12px;color:#333333;width:100%;border-width: 1px;border-color: #729ea5;border-collapse: collapse;}
+	table.tftable th {font-size:12px;background-color:#acc8cc;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;text-align:left;}
+	table.tftable tr {background-color:#d4e3e5;}
+	table.tftable td {font-size:12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;}
+</style>
+
+<body>
+    <p> 
+        <br> Filter: 
+        <input id="filterName" name="filterName"> 
+        <input type="submit" value="search"class="search">
+        <br> 
+    </p>
+<table id="tfhover" class="tftable" border="1">
+<thead>
+<tr><th>name</th><th>discovered_os_name</th><th>os_description</th><th>location_limited</th><th>compliance_classification</th><th>serial_number</th><th>customer</th><th>business_application</th><th>discovered_model</th><th>calculated_location</th></tr>
+</thead>
+{% for server in list%}
+<tr>
+	<td>{{ server.name }}</td>
+	<td>{{ server.discovered_os_name }}</td>
+	<td>{{ server.os_description }}</td>
+	<td>{{ server.operation_location_limited_to }}</td>
+	<td>{{ server.compliance_classification }}</td>
+	<td>{{ server.serial_number }}</td>
+	<td>{{ server.customer }}</td>
+	<td>{{ server.business_application }}</td>
+	<td>{{ server.discovered_model }}</td>
+	<td>{{ server.calculated_location }}</td>
+</tr>
+{% endfor %}
+</table>
+</body>
+</html>
+
