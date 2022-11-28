@@ -1,9 +1,5 @@
 version: '3'
 
-volumes:
-  mysql_data:
-  mysql_log:
-
 services:
   mysql:
 
@@ -12,8 +8,8 @@ services:
     privileged: true
 
     volumes:
-      - mysql_data:/var/lib/mysql:rw
-      - mysql_log:/logs:rw
+      - ./mysql/mysql_data:/var/lib/mysql:rw
+      - ./mysql/mysql_log:/logs:rw
       - ./mysql/conf:/etc/mysql/conf.d
       - ./mysql/init:/docker-entrypoint-initdb.d/
       - ./mysql/dump:/dump:rw
@@ -22,6 +18,7 @@ services:
       - "3306" 
     ports:
       - "3306:3306"
+    
 
     environment:
       MYSQL_ROOT_PASSWORD: initial
@@ -34,7 +31,8 @@ services:
     command: --character-set-server=utf8mb4 
              --collation-server=utf8mb4_unicode_ci
              --explicit_defaults_for_timestamp=true
-            #  --init-file /docker-entrypoint-initdb.d/init.sql
+
+
  
   django:
     hostname: django
@@ -45,27 +43,26 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./unixcmdb:/usr/src/app:rw
-    # command: python manage.py runserver 0.0.0.0:8000
-    command: sh /usr/src/app/startweb.sh
-    # ports:
-    #    - "8000:8000"
+    #command: python manage.py runserver 0.0.0.0:8000
+    #command: sh /usr/src/app/startweb.sh
+    command: /usr/src/app/wait-for-it.sh mysql:3306 -- /usr/src/app/startweb.sh
+    #command: /usr/src/app/wait-for-it.sh mysql:3306 -- ‘/usr/local/bin/gunicorn -c /usr/src/app/gunicorn.conf.py unixcmdb.wsgi:application“
+    ports:
+         - "8000:8000"
     expose:
          - "8000"
-    links:
-      - mysql
-    depends_on:
-      - mysql
+
  
   nginx:
     image: nginx:latest
     container_name: unixcmdb_nginx
+
+    expose:
+       - "8080"
     ports:
        - "8080:8080"
+
     volumes:
       - ./unixcmdb/staticfiles:/staticfiles
       - ./nginx:/etc/nginx/conf.d
-    links:
-      - django
-    depends_on:
-      - django
-      - mysql
+

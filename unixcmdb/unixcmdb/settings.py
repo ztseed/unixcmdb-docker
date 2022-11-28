@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'unixcmdb_mysql',
+    'gunicorn',
 ]
 
 MIDDLEWARE = [
@@ -84,7 +85,7 @@ DATABASES = {
         'NAME': 'unixcmdb',
         'HOST': 'mysql',
         'PORT': 3306,
-        'USER': 'ztseed',
+        'USER': 'root',
         'PASSWORD': 'initial',
     }
 }
